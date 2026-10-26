@@ -22,6 +22,8 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
+(( $+commands[fnm] )) && eval "$(fnm env --use-on-cd --shell zsh)"
+
 go-update() {
   local latest=$(curl -fsSL 'https://go.dev/VERSION?m=text' | head -1)
   local current=$(head -1 /usr/local/go/VERSION 2>/dev/null)
@@ -48,7 +50,8 @@ nvim-update() {
 
 update-all() {
   rustup update
-  cargo install --locked ripgrep fd-find
+  cargo install --locked ripgrep fd-find fnm
+  (( $+commands[fnm] )) && { fnm install --lts && fnm default lts-latest }
   go-update
   go install github.com/jesseduffield/lazygit@latest
   uv self update && uv python upgrade
